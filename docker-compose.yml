@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  user:
+    build:
+      context: ./user_service
+    container_name: user_service
+    ports:
+      - "8001:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=user_service.settings
+      - .env
+    depends_on:
+      - db
+
+  notification:
+    build:
+      context: ./notification_service
+    container_name: notification_service
+    ports:
+      - "8003:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=notification_service.settings
+      - .env
+    depends_on:
+      - db
+
+  feeds:
+    build:
+      context: ./post_service
+    container_name: post_service
+    ports:
+      - "8002:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=post_service.settings
+      # - NOTIFICATION_SERVICE_URL=http://notification:8000
+      # - USER_SERVICE_URL=http://user:8000
+      - .env
+    depends_on:
+      - db
+
+  gateway:
+    build:
+      context: ./social_gateway
+    container_name: social_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=social_gateway.settings
+      # - USER_SERVICE_URL=http://user:8000
+      # - FEEDS_SERVICE_URL=http://feeds:8000
+      - .env
+    depends_on:
+      - user
+      - notification
+      - feeds
+
+  db:
+    image: postgres:13
+    container_name: postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env.db
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

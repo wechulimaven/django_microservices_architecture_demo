@@ -1,0 +1,33 @@
+__pycache__/
+db.sqlite3
+.DS_Store
+.env
+.vscode/
+media/
+venv/
+bin/ssh.sh
+bin/ssh-live.sh
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Pem Files
+*.pem
+requirements-dev.txt
+.idea
+
+
+# Celery
+celerybeat-schedule
+# core/data_resources
+.history
+*.history

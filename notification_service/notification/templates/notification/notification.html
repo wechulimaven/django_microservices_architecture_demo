@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+</head>
+<body>
+    <h1>Notifications</h1>
+    <ul id="notifications">
+    </ul>
+
+    <script>
+        const socket = new WebSocket(`ws://127.0.0.1:7000/ws/notifications/`);
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log('Message received:', data); // Add this line to log received messages
+            const notifications = document.getElementById('notifications');
+            const notification = document.createElement('li');
+            notification.textContent = data.message;
+            notifications.appendChild(notification);
+        };
+
+        socket.onopen = function(e) {
+            console.log('WebSocket connection established');
+        };
+
+        socket.onerror = function(error) {
+            console.log('WebSocket error:', error); // Add this line to log errors
+        };
+
+        socket.onclose = function(e) {
+            console.log('WebSocket connection closed');
+        };
+    </script>
+</body>
+</html>
