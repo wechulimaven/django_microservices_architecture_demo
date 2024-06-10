@@ -209,7 +209,7 @@ spec:
 
 ## 7. Security Considerations
 
-- **Authentication**: Auth token are used for both user authentication and service to service communication.
+- **Authentication**: Auth token are used for both user authentication and service to service communication. Each service has a unique token thats required by the other service to authenticate each request made.
 - **HTTPS**: Secure communication between clients and the gateway service.
 - **Secrets Management**: Kubernetes secrets are used to store sensitive data such as database credentials.
 - **Request Throttling**: The Gateway Service implements request throttling to prevent abuse and ensure fair usage.
