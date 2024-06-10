@@ -15,7 +15,7 @@
 
 ## 1. Introduction
 
-This document provides a detailed design for a microservices-based architecture for a social media platform. The system comprises four main services: User, Notification, Feeds, and Gateway. Each service uses an independent Sql database connected by IDs. The Gateway service integrates with all the other services and has its own PostgreSQL database.The Notification service is triggered by the Feeds service upon post creation and sends notifications only to active users.
+This document provides a detailed design for a microservices-based architecture for a social media platform. The system comprises four main services: User, Notification, Feeds/Posts, and Gateway. All services use the same PostgreSQL database instance, but each service has its own schema. The Gateway service integrates with all the other services and has its own PostgreSQL database.The Notification service is triggered by the Feeds service upon post creation and sends notifications only to active users.
 
 ## 2. Architecture Overview
 
@@ -30,9 +30,6 @@ The architecture follows a microservices approach where each service is independ
 - **PostgreSQL Databases**: Independent databases for gateway service.
 - **Sqlite Databases**: Databases for each service.
 
-### Architecture Diagram
-
-![Microservices Architecture Diagram](architecture-diagram.png)
 
 ## 3. Microservices Description
 
@@ -91,13 +88,9 @@ The Notification Service uses Django Channels for real-time notifications.
 
 ## 5. Data Storage Strategies
 
-### 5.1 Independent Databases
+### 5.1 Shared PostgreSQL Database
 
-Each microservice uses its own database. The databases are related by IDs to ensure data consistency across services
-1. User Service: Uses PostgreSQL for reliable and scalable user data management.
-2. Notification Service: Uses SQLite for lightweight and simple data storage.
-3. Feeds Service: Uses SQLite for lightweight and simple data storage.
-4. Gateway Service: Uses its own PostgreSQL database for managing aggregated data and routing information.
+All microservices use the same PostgreSQL database instance, but each service has its own schema to isolate its data. This allows for centralized management and efficient use of database resources while maintaining data separation.
 
 #### Example Configuration for gateway Service
 - **Database**: `user_db`
@@ -121,9 +114,16 @@ env:
     value: "5432"
 ```
 
-### 5.2 Gateway Database
+### 5.2 Redis Configuration for Feeds Service
 
-The Gateway Service has its own PostgreSQL database for managing aggregated data and routing information.
+Redis is used for caching frequently accessed data and storing Celery task queues.
+
+Environment variables for Feeds Service:
+```
+env:
+  - name: REDIS_URL
+    value: redis://redis-service:6379/0
+```
 
 ## 6. Deployment Strategies
 
@@ -175,12 +175,22 @@ spec:
     spec:
       containers:
       - name: user
-        image: user_service_image:latest
+        image: your-dockerhub-username/user_service:latest
         ports:
         - containerPort: 8000
         env:
         - name: DJANGO_SETTINGS_MODULE
           value: user_service.settings
+        - name: RDS_NAME
+          value: postgres
+        - name: RDS_USER
+          value: postgres
+        - name: RDS_PASSWORD
+          value: postgres
+        - name: RDS_HOST
+          value: db
+        - name: RDS_PORT
+          value: "5432"
 ---
 apiVersion: v1
 kind: Service
@@ -194,6 +204,7 @@ spec:
       port: 8000
       targetPort: 8000
   type: ClusterIP
+
 ```
 
 ## 7. Security Considerations

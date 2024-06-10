@@ -20,3 +20,13 @@ spec:
         env:
         - name: DJANGO_SETTINGS_MODULE
           value: notification_service.settings
+        - name: RDS_NAME
+          value: postgres
+        - name: RDS_USER
+          value: postgres
+        - name: RDS_PASSWORD
+          value: postgres
+        - name: RDS_HOST
+          value: db
+        - name: RDS_PORT
+          value: "5432"

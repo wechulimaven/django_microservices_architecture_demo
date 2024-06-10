@@ -24,3 +24,13 @@ spec:
           value: http://user-service:8000
         - name: NOTIFICATION_SERVICE_URL
           value: http://notification-service:8000
+        - name: RDS_NAME
+          value: postgres
+        - name: RDS_USER
+          value: postgres
+        - name: RDS_PASSWORD
+          value: postgres
+        - name: RDS_HOST
+          value: db
+        - name: RDS_PORT
+          value: "5432"

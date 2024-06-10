@@ -7,12 +7,29 @@ ENV PYTHONUNBUFFERED 1
 # Create a working directory
 WORKDIR /app
 
+# create the app user
+RUN addgroup --system app \
+    && adduser --system --ingroup app app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3-dev\
+        libpq-dev\
+        gcc \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY . /app/
+
+# chown all the files to the app user
+RUN chown -R app:app /app
+
+# change to the app user
+USER app
 
 # Run migrations and start the server
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]

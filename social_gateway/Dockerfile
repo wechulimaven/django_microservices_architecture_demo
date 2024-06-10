@@ -16,8 +16,6 @@ RUN apt-get update \
         python3-dev\
         libpq-dev\
         gcc \
-        musl-dev \
-        libffi-dev\
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
