@@ -51,6 +51,7 @@ services:
       # - FEEDS_SERVICE_URL=http://feeds:8000
       - .env
     depends_on:
+      - db
       - user
       - notification
       - feeds
@@ -62,8 +63,43 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env.db
+  
+  redis:
+    image: redis:latest
     ports:
-      - "5432:5432"
+      - "6379:6379"
+
+  celery:
+    restart: always
+    build:
+      context: ./post_service
+      dockerfile: Dockerfile.celery
+    command: celery -A post_service worker -B -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      - DEBUG=True
+    volumes:
+      - ./app:/usr/src/app/
+    depends_on:
+      - redis
+      - feeds
+    env_file:
+      - .env
+
+  celery-beat:
+    restart: always
+    build:
+      context: ./post_service
+      dockerfile: Dockerfile.celery
+    command: celery -A post_service worker -B -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ./app:/usr/src/app/
+    depends_on:
+      - db
+      - redis
+      - feeds
+      - celery
+    env_file:
+      - .env
 
 volumes:
   postgres_data:

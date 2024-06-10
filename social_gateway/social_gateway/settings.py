@@ -83,11 +83,11 @@ WSGI_APPLICATION = "social_gateway.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("RDS_NAME"),
-        "HOST": os.getenv("RDS_HOST"),
-        "PORT": os.getenv("RDS_PORT"),
-        "USER": os.getenv("RDS_USER"),
-        "PASSWORD": os.getenv("RDS_PASSWORD"),
+        "NAME": os.environ.get("RDS_NAME", "postgres"),
+        "HOST": os.environ.get("RDS_HOST", "db"),
+        "PORT": os.environ.get("RDS_PORT", "5432"),
+        "USER": os.environ.get("RDS_USER", "postgres"),
+        "PASSWORD": os.environ.get("RDS_PASSWORD", "postgres"),
     },
 }
 
@@ -161,7 +161,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 sentry_sdk.init(
-    dsn="https://cd7f90fe8a024dd1a4397c67354e34cf@o911120.ingest.us.sentry.io/5846163",
+    dsn=os.environ.get('SENTRY_DNS'),
     integrations=[DjangoIntegration()],
     traces_sample_rate=1.0,
     send_default_pii=True,

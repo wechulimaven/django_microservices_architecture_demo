@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+    "django_celery_beat",
 
     "feeds"
 ]
@@ -127,16 +128,17 @@ REST_FRAMEWORK = {
 logging.captureWarnings(True)
 
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "TIMEOUT": 300,
-#         "LOCATION": "redis://redis:6379/0",
-#         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-#         "KEY_PREFIX": "core",
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "TIMEOUT": 300,
+        "LOCATION": "redis://redis:6379/0",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "core",
+    }
+}
 
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 BROKER_URL = "redis://redis:6379/0"
 CELERY_RESULT_BACKEND = "redis://redis:6379/0"
