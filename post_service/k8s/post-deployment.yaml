@@ -20,3 +20,7 @@ spec:
         env:
         - name: DJANGO_SETTINGS_MODULE
           value: post_service.settings
+        - name: USER_SERVICE_URL
+          value: http://user-service:8000
+        - name: NOTIFICATION_SERVICE_URL
+          value: http://notification-service:8000
